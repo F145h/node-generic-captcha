@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>bwip-js - demo</title>
+        <script>
+        var module = {"exports": {}}; // a node.js stub
+        </script>
+        <script type="text/javascript" src="../../node-generic-captcha.js"></script>
+        <script type="text/javascript">
+          BWIPJS.print = function(s) {
+          	var div = document.getElementById('output');
+          	if (div)
+          		div.innerHTML += s.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '<br>';
+          };
+          BWIPJS.debug = function(s) {
+          	return;
+          	var div = document.getElementById('debug');
+          	if (div)
+          		div.innerHTML += s + '\r\n';
+          };
+
+          function render(text) {
+
+              var c = new pureJsCaptcha("Hello world")
+              c.addNoise()
+              c.draw("canvas")
+
+          }
+        </script>
+    </head>
+<body>
+<canvas id="canvas" width=1 height=1 style="border:1px solid #fff;visibility:hidden"></canvas>
+<div id="output" style="white-space:pre"></div>
+<xmp id="debug" style="white-space:pre"></xmp>
+<script type="text/javascript">
+    render("14541")
+</script>
+</body>
+</html>
