@@ -4186,7 +4186,7 @@ var BWIPJScode128 = function () {
 
 // The one and only global - our class constructor
 function BWIPJS() {
-	
+
 	// PostScript state
 	this.ptr	= 0;				// operand stack pointer
 	this.stk	= [];				// operand stack
@@ -4206,7 +4206,7 @@ function BWIPJS() {
 		}
 	}
 
-	// Initialize the graphics 
+	// Initialize the graphics
 	this.greset();
 }
 
@@ -4217,7 +4217,7 @@ BWIPJS.fonts = {};
 // Host-specific overrides
 BWIPJS.print = function(s) {};
 BWIPJS.debug = function(s) {};
-//BWIPJS.load  = function(s) {};	// force a run-time error	
+//BWIPJS.load  = function(s) {};	// force a run-time error
 
 BWIPJS.psarray = function(v) {
 	if (!(this instanceof BWIPJS.psarray))
@@ -4872,7 +4872,7 @@ BWIPJS.prototype.gclone = function(o) {
 
 // Line algorithm that produces a more symmetric line than Bresenham's
 //
-// optmz == boolean 
+// optmz == boolean
 // x1,y1 == starting coordinates
 // x2,y2 == ending coordinates
 // penx,peny == pen dimensions
@@ -5005,7 +5005,7 @@ BWIPJS.prototype.drawarc = function(x0, y0, x1, y1, sa, se, penx, peny) {
 //	undefined : hasn't been set()
 //	0 (zero)  :	was set by the current path operation
 //	1 (one)	  : was set by the previous fill()
-// 
+//
 // When filling, all zeros and undefines (bounded by the path) will be
 // inverted to ones.  All ones will be inverted to undefined.
 BWIPJS.fillmap = function() {
@@ -5078,6 +5078,7 @@ BWIPJS.fillmap = function() {
 		}
 	}
 }
+
 
 
 
@@ -5266,8 +5267,9 @@ function PNGlib(width, height, depth) {
     }
 }
 
+var PI = 3.1415926
 
-function Bitmap() {
+function Bitmap(precisely) {
     this._clr = 0;					// currently active color
     var _clrs = {};					// color map
     var _nclr = 0;					// color count
@@ -5276,6 +5278,7 @@ function Bitmap() {
     this._miny = Infinity;
     this._maxx = 1;
     this._maxy = 1;
+    this.precisely = precisely;
 
     this.color = function (r, g, b) {
         var rgb = (r << 16) | (g << 8) | b;
@@ -5286,6 +5289,7 @@ function Bitmap() {
 
     this.set = function (x, y) {
         // postscript graphics work with floating-pt numbers
+
         x = Math.floor(x);
         y = Math.floor(y);
 
@@ -5294,27 +5298,32 @@ function Bitmap() {
         if (this._miny > y) this._miny = y;
         if (this._maxy < y) this._maxy = y;
 
+        if (!this.precisely) {
+            y += Math.floor(Math.random()*3 - 2);
+            //x += Math.floor(Math.random()*3 - 2);
+        }
+
         _bits.push([x, y, this._clr]);
     }
 
-    this.addNoise = function() {
+    this.addNoise = function(colored) {
 
-        for (var i = 0;i<_bits.length;++i){
-            if (Math.random() > 0.6) {
-                _bits.splice(_bits.length - i + 1, 1);
-            }
-        }
+        var oldColor = this._clr;
 
         for (var ix = this._minx; ix <= this._maxx; ++ix)
           for (var iy = this._miny; iy <= this._maxy; ++iy)
           {
-              var c = Math.random() * 255
-              this.color(c, c+128, c+64)
               if (Math.random() > 0.75) {
+                  var c = Math.random() * 255
+
+                  if (colored)
+                      this.color(c, c+64, c+128);
+
                   this.set(ix, iy)
               }
           }
 
+        this._clr = oldColor;
     }
 
     this.pngStream = function () {
@@ -5390,9 +5399,9 @@ function Bitmap() {
 }
 
 
-function pureJsCaptcha(text)
+function nodeGenericCaptcha(text, options)
 {
-    this.bitmap = new Bitmap();
+    this.bitmap = new Bitmap(typeof options != "undefined" && typeof options.precisely != "undefined" ? options.precisely : true);
 
      var bw = new BWIPJS;
      var opts = {};
@@ -5424,10 +5433,10 @@ function pureJsCaptcha(text)
     this.pngStream = function() { return this.bitmap.pngStream(); }
     this.draw = function(canvasId) { this.bitmap.placeToCanvas(canvasId); }
 
-    this.addNoise = function() { this.bitmap.addNoise(); }
+    this.addNoise = function(options) { this.bitmap.addNoise(typeof options != "undefined" && typeof options.colored != "undefined" && options.colored); }
 };
 
 // node.js exports
 if (typeof module != 'undefined' && typeof module.exports != 'undefined') {
-    module.exports.make = pureJsCaptcha
+    module.exports.make = function(text, opt) { return new nodeGenericCaptcha(text, opt) }
 }

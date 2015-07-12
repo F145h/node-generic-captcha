@@ -2,34 +2,39 @@
 <html>
     <head>
         <title>bwip-js - demo</title>
-        <script>
-        var module = {"exports": {}}; // a node.js stub
-        </script>
-        <script type="text/javascript" src="../../node-generic-captcha.js"></script>
+        <script type="text/javascript" src="../../node-generic-captcha-min.js"></script>
         <script type="text/javascript">
-          BWIPJS.print = function(s) {
-          	var div = document.getElementById('output');
-          	if (div)
-          		div.innerHTML += s.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '<br>';
-          };
-          BWIPJS.debug = function(s) {
-          	return;
-          	var div = document.getElementById('debug');
-          	if (div)
-          		div.innerHTML += s + '\r\n';
-          };
 
           function render(text) {
 
-              var c = new pureJsCaptcha("Hello world")
-              c.addNoise()
-              c.draw("canvas")
+              var c1 = new nodeGenericCaptcha("145 some text")
+              c1.addNoise()
+              c1.draw("canvas1")
+
+              var c2 = new nodeGenericCaptcha("42 captcha!")
+              c2.addNoise({colored: true})
+              c2.draw("canvas2")
+
+              var c3 = new nodeGenericCaptcha("Hello world", {precisely : false})
+              c3.draw("canvas3")
+
+              var c4 = new nodeGenericCaptcha("Captcha", {precisely : false})
+              c4.addNoise()
+              c4.draw("canvas4")
+
+              var c5 = new nodeGenericCaptcha("TEXT :-)", {precisely : false})
+              c5.addNoise({colored: true})
+              c5.draw("canvas5")
 
           }
         </script>
     </head>
 <body>
-<canvas id="canvas" width=1 height=1 style="border:1px solid #fff;visibility:hidden"></canvas>
+<div><canvas id="canvas1" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
+<div><canvas id="canvas2" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
+<div><canvas id="canvas3" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
+<div><canvas id="canvas4" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
+<div><canvas id="canvas5" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
 <div id="output" style="white-space:pre"></div>
 <xmp id="debug" style="white-space:pre"></xmp>
 <script type="text/javascript">

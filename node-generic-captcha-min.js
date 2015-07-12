@@ -583,8 +583,9 @@ function PNGlib(width, height, depth) {
     }
 }
 
+var PI = 3.1415926
 
-function Bitmap() {
+function Bitmap(precisely) {
     this._clr = 0;					// currently active color
     var _clrs = {};					// color map
     var _nclr = 0;					// color count
@@ -593,6 +594,7 @@ function Bitmap() {
     this._miny = Infinity;
     this._maxx = 1;
     this._maxy = 1;
+    this.precisely = precisely;
 
     this.color = function (r, g, b) {
         var rgb = (r << 16) | (g << 8) | b;
@@ -603,6 +605,7 @@ function Bitmap() {
 
     this.set = function (x, y) {
         // postscript graphics work with floating-pt numbers
+
         x = Math.floor(x);
         y = Math.floor(y);
 
@@ -611,27 +614,32 @@ function Bitmap() {
         if (this._miny > y) this._miny = y;
         if (this._maxy < y) this._maxy = y;
 
+        if (!this.precisely) {
+            y += Math.floor(Math.random()*3 - 2);
+            //x += Math.floor(Math.random()*3 - 2);
+        }
+
         _bits.push([x, y, this._clr]);
     }
 
-    this.addNoise = function() {
+    this.addNoise = function(colored) {
 
-        for (var i = 0;i<_bits.length;++i){
-            if (Math.random() > 0.6) {
-                _bits.splice(_bits.length - i + 1, 1);
-            }
-        }
+        var oldColor = this._clr;
 
         for (var ix = this._minx; ix <= this._maxx; ++ix)
           for (var iy = this._miny; iy <= this._maxy; ++iy)
           {
-              var c = Math.random() * 255
-              this.color(c, c+128, c+64)
               if (Math.random() > 0.75) {
+                  var c = Math.random() * 255
+
+                  if (colored)
+                      this.color(c, c+64, c+128);
+
                   this.set(ix, iy)
               }
           }
 
+        this._clr = oldColor;
     }
 
     this.pngStream = function () {
@@ -707,9 +715,9 @@ function Bitmap() {
 }
 
 
-function pureJsCaptcha(text)
+function nodeGenericCaptcha(text, options)
 {
-    this.bitmap = new Bitmap();
+    this.bitmap = new Bitmap(typeof options != "undefined" && typeof options.precisely != "undefined" ? options.precisely : true);
 
      var bw = new BWIPJS;
      var opts = {};
@@ -741,11 +749,10 @@ function pureJsCaptcha(text)
     this.pngStream = function() { return this.bitmap.pngStream(); }
     this.draw = function(canvasId) { this.bitmap.placeToCanvas(canvasId); }
 
-    this.addNoise = function() { this.bitmap.addNoise(); }
+    this.addNoise = function(options) { this.bitmap.addNoise(typeof options != "undefined" && typeof options.colored != "undefined" && options.colored); }
 };
 
 // node.js exports
 if (typeof module != 'undefined' && typeof module.exports != 'undefined') {
-    module.exports.make = pureJsCaptcha
+    module.exports.make = function(text, opt) { return new nodeGenericCaptcha(text, opt) }
 }
-
