@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
-        <title>bwip-js - demo</title>
+        <title>node-generic-captcha - canvas demo</title>
         <script type="text/javascript" src="../../node-generic-captcha-min.js"></script>
         <script type="text/javascript">
 
-          function render(text) {
+          function render() {
 
               var c1 = new nodeGenericCaptcha("145 some text")
               c1.addNoise()
@@ -35,10 +35,8 @@
 <div><canvas id="canvas3" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
 <div><canvas id="canvas4" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
 <div><canvas id="canvas5" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
-<div id="output" style="white-space:pre"></div>
-<xmp id="debug" style="white-space:pre"></xmp>
 <script type="text/javascript">
-    render("14541")
+    render()
 </script>
 </body>
 </html>

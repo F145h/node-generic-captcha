@@ -72,7 +72,7 @@ var BWIPJSrenlinear = function () {
         this.stk[this.ptr++] = $f22;
         var t37 = this.stk[--this.ptr];
         var t36 = this.stk[--this.ptr];
-        for (t35 in t36) {
+        for (var t35 in t36) {
             if (t36 instanceof BWIPJS.psstring || t36 instanceof BWIPJS.psarray) {
                 if (t35.charCodeAt(0) > 57) continue;
                 this.stk[this.ptr++] = t36.get(t35);
@@ -139,7 +139,7 @@ var BWIPJSrenlinear = function () {
         this.stk[this.ptr++] = $f25;
         var t42 = this.stk[--this.ptr];
         var t41 = this.stk[--this.ptr];
-        for (t40 in t41) {
+        for (var t40 in t41) {
             if (t41 instanceof BWIPJS.psstring || t41 instanceof BWIPJS.psarray) {
                 if (t40.charCodeAt(0) > 57) continue;
                 this.stk[this.ptr++] = t41.get(t40);
@@ -159,7 +159,7 @@ var BWIPJSrenlinear = function () {
 
         var t45 = this.stk[--this.ptr];
         var t44 = this.stk[--this.ptr];
-        for (t43 in t44) {
+        for (var t43 in t44) {
             if (t44 instanceof BWIPJS.psstring || t44 instanceof BWIPJS.psarray) {
                 if (t43.charCodeAt(0) > 57) continue;
                 this.stk[this.ptr++] = t44.get(t43);
@@ -204,7 +204,7 @@ var BWIPJSrenlinear = function () {
         this.stk[this.ptr++] = $f28;
         var t48 = this.stk[--this.ptr];
         var t47 = this.stk[--this.ptr];
-        for (t46 in t47) {
+        for (var t46 in t47) {
             if (t47 instanceof BWIPJS.psstring || t47 instanceof BWIPJS.psarray) {
                 if (t46.charCodeAt(0) > 57) continue;
                 this.stk[this.ptr++] = t47.get(t46);
@@ -938,7 +938,7 @@ var BWIPJSrenlinear = function () {
     this.stk[this.ptr++] = $f0;
     var t2 = this.stk[--this.ptr];
     var t1 = this.stk[--this.ptr];
-    for (t0 in t1) {
+    for (var t0 in t1) {
         if (t1 instanceof BWIPJS.psstring || t1 instanceof BWIPJS.psarray) {
             if (t0.charCodeAt(0) > 57) continue;
             this.stk[this.ptr++] = t1.get(t0);
@@ -954,7 +954,7 @@ var BWIPJSrenlinear = function () {
     this.stk[this.ptr++] = $f1;
     var t5 = this.stk[--this.ptr];
     var t4 = this.stk[--this.ptr];
-    for (t3 in t4) {
+    for (var t3 in t4) {
         if (t4 instanceof BWIPJS.psstring || t4 instanceof BWIPJS.psarray) {
             if (t3.charCodeAt(0) > 57) continue;
             this.stk[this.ptr++] = t4.get(t3);
@@ -1187,7 +1187,6 @@ var BWIPJSrenlinear = function () {
     }
     this.grestore();
     this.dstk.pop(); this.dict = this.dstk[this.dstk.length - 1];
-    psstptr = this.ptr;
 }
 // END OF renlinear
 
@@ -3354,7 +3353,7 @@ var BWIPJScode128 = function () {
     this.stk[this.ptr++] = $f5;
     var t7 = this.stk[--this.ptr];
     var t6 = this.stk[--this.ptr];
-    for (t5 in t6) {
+    for (var t5 in t6) {
         if (t6 instanceof BWIPJS.psstring || t6 instanceof BWIPJS.psarray) {
             if (t5.charCodeAt(0) > 57) continue;
             this.stk[this.ptr++] = t6.get(t5);
@@ -4055,7 +4054,7 @@ var BWIPJScode128 = function () {
     this.stk[this.ptr++] = $f80;
     var t100 = this.stk[--this.ptr];
     var t99 = this.stk[--this.ptr];
-    for (t98 in t99) {
+    for (var t98 in t99) {
         if (t99 instanceof BWIPJS.psstring || t99 instanceof BWIPJS.psarray) {
             if (t98.charCodeAt(0) > 57) continue;
             this.stk[this.ptr++] = t99.get(t98);
@@ -4169,7 +4168,6 @@ var BWIPJScode128 = function () {
         if (t107.call(this) == -1) return -1;
     }
     this.dstk.pop(); this.dict = this.dstk[this.dstk.length - 1];
-    psstptr = this.ptr;
 }
 // END OF code128
 
@@ -4674,7 +4672,7 @@ BWIPJS.prototype.pathbbox = function() {
 BWIPJS.prototype.gsave = function() {
 	// clone all g_ properties
 	var ctx = {};
-	for (id in this)
+	for (var id in this)
 		if (id.indexOf('g_') == 0)
 			ctx[id] = this.gclone(this[id]);
 
@@ -4684,7 +4682,7 @@ BWIPJS.prototype.grestore = function() {
 	if (!this.gstk.length)
 		throw 'grestore: stack underflow';
 	var ctx = this.gstk.pop();
-	for (id in ctx)
+	for (var id in ctx)
 		this[id] = ctx[id];
 
 	// color is part of the bitmap interface and must be restored separately
@@ -4863,7 +4861,7 @@ BWIPJS.prototype.gclone = function(o) {
 
 	if (o instanceof Object) {
 		var t = {};
-		for (i in o)
+		for (var i in o)
 			t[i] = this.gclone(o[i]);
 		return t;
 	}
@@ -5262,8 +5260,17 @@ function PNGlib(width, height, depth) {
         crc32(this.buffer, this.idat_offs, this.idat_size);
         crc32(this.buffer, this.iend_offs, this.iend_size);
 
+        var buf = new Buffer(8);
+        buf.writeUInt8(137, 0);
+        buf.writeUInt8(80, 1);
+        buf.writeUInt8(78, 2);
+        buf.writeUInt8(71, 3);
+        buf.writeUInt8(13, 4);
+        buf.writeUInt8(10, 5);
+        buf.writeUInt8(26, 6);
+        buf.writeUInt8(10, 7);
         // convert PNG to string
-        return "\211PNG\r\n\032\n" + this.buffer.join('');
+        return buf.toString('binary') + this.buffer.join('');
     }
 }
 
@@ -5339,7 +5346,7 @@ function Bitmap(precisely) {
 
         // map the colors
         var cmap = [];
-        for (rgb in _clrs)
+        for (var rgb in _clrs)
             cmap[rgb] = png.color(rgb >> 16, (rgb >> 8) & 0xff, (rgb & 0xff), 255);
 
         for (var i = 0; i < _bits.length; i++) {
@@ -5409,7 +5416,7 @@ function nodeGenericCaptcha(text, options)
      opts.alttext = bw.value(text);
 
      bw.bitmap(this.bitmap);
-     bw.scale(5,5);
+     bw.scale(1,1);
      bw.push(text);
      bw.push(opts);
      BWIPJScode128.call(bw);
