@@ -22,6 +22,7 @@ http.createServer(function(req, res) {
         html += "<div><img src='/captcha3.png' style='padding-bottom: 10px;' /></div>\n";
         html += "<div><img src='/captcha4.png' style='padding-bottom: 10px;' /></div>\n";
         html += "<div><img src='/captcha5.png' style='padding-bottom: 10px;' /></div>\n";
+        html += "<div><img src='/captcha6.png' style='padding-bottom: 10px;' /></div>\n";
         html += "</body>\n";
         html += "</html>";
 
@@ -31,40 +32,53 @@ http.createServer(function(req, res) {
     break;
     case '/captcha1.png':
     {
-    	var captcha = captchaFactory.make("145 some text")
-      	captcha.addNoise()
+    	var captcha = captchaFactory.make()
+        captcha.drawText("145 some text");
+        captcha.addNoise({type: "simple"});
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(captcha.pngStream(), 'binary');
     }
     break;
     case '/captcha2.png':
     {
-    	var captcha = captchaFactory.make("42 captcha!")
-        captcha.addNoise({colored: true})
+    	var captcha = captchaFactory.make()
+        captcha.drawText("42 captcha!");
+        captcha.addNoise({type: "simple", colored: true});
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(captcha.pngStream(), 'binary');
     }
     break;
     case '/captcha3.png':
     {
-    	var captcha = captchaFactory.make("Hello world", {precisely : false})
+    	var captcha = captchaFactory.make({precisely : false})
+        captcha.drawText("Hello world");
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(captcha.pngStream(), 'binary');
     }
     break;
     case '/captcha4.png':
     {
-    	var captcha = captchaFactory.make("Captcha", {precisely : false})
-    	captcha.addNoise()
+    	var captcha = captchaFactory.make({precisely : false})
+        captcha.drawText("Captcha");
+        captcha.addNoise();
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(captcha.pngStream(), 'binary');
     }
     break;
     case '/captcha5.png':
     {
-      	var captcha = captchaFactory.make("TEXT :-)", {precisely : false})
-        captcha.addNoise({colored: true})
+      	var captcha = captchaFactory.make({precisely : false})
+        captcha.drawText("TEXT");
+        captcha.addNoise({colored: true});
         res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(captcha.pngStream(), 'binary');
+    }
+    break;
+    case '/captcha6.png':
+    {
+        var captcha = captchaFactory.make({usePerlinBrush: true});
+        captcha.drawText("Perlin noise");
+        captcha.addNoise();
         res.end(captcha.pngStream(), 'binary');
     }
     break;
