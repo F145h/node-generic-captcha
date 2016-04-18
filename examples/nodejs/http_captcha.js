@@ -1,7 +1,7 @@
 var http = require("http")
 var url = require('url');
 
-var captchaFactory = require("../../node-generic-captcha.js");
+var captchaFactory = require("../../distr/node-generic-captcha.js");
 
 var captchaNumber = 0;
 
