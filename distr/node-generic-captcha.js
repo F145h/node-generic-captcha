@@ -10,13 +10,13 @@ var ocrbFont12_03 ={"h":27,"w":18,"g":{ "0":{ "t":27,"l":0,"w":18,"h":27,"m":"y0
 
 
 
-function perlinNoiseGenerator() {
+function perlinNoiseGenerator(seed) {
 
   function Grad(x, y, z) {
     this.x = x; this.y = y; this.z = z;
   }
 
-  Grad.prototype.dot3 = function(x, y, z) {
+  Grad.prototype.makeDot = function(x, y, z) {
     return this.x*x + this.y*y + this.z*z;
   };
 
@@ -37,15 +37,11 @@ function perlinNoiseGenerator() {
   251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
   49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
   138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
-  // To remove the need for index wrapping, double the permutation table length
+
   var perm = new Array(512);
   var gradP = new Array(512);
-
-  // This isn't a very good seeding function, but it works ok. It supports 2^16
-  // different seed values. Write something better if you need more seeds.
   this.seed = function(seed) {
     if(seed > 0 && seed < 1) {
-      // Scale the seed out
       seed *= 65536;
     }
 
@@ -67,24 +63,13 @@ function perlinNoiseGenerator() {
     }
   };
 
-  this.seed(0);
+  this.seed(seed);
 
-  /*
-  for(var i=0; i<256; i++) {
-    perm[i] = perm[i + 256] = p[i];
-    gradP[i] = gradP[i + 256] = grad3[perm[i] % 12];
-  }*/
-
-  // Skewing and unskewing factors for 2, 3, and 4 dimensions
   var F2 = 0.5*(Math.sqrt(3)-1);
   var G2 = (3-Math.sqrt(3))/6;
 
   var F3 = 1/3;
   var G3 = 1/6;
-
-  
-
-  // ##### Perlin noise stuff
 
   function fade(t) {
     return t*t*t*(t*(t*6-15)+10);
@@ -94,31 +79,28 @@ function perlinNoiseGenerator() {
     return (1-t)*a + t*b;
   }
 
-  // 3D Perlin Noise
-  this.perlin3 = function(x, y, z) {
-    // Find unit grid cell containing point
+  this.z = 0;
+  this.nextCapcha = function () { this.z += 5}
+  this.perlin = function(x, y) {
+    z = this.z;
     var X = Math.floor(x), Y = Math.floor(y), Z = Math.floor(z);
-    // Get relative xyz coordinates of point within that cell
+
     x = x - X; y = y - Y; z = z - Z;
-    // Wrap the integer cells at 255 (smaller integer period can be introduced here)
     X = X & 255; Y = Y & 255; Z = Z & 255;
 
-    // Calculate noise contributions from each of the eight corners
-    var n000 = gradP[X+  perm[Y+  perm[Z  ]]].dot3(x,   y,     z);
-    var n001 = gradP[X+  perm[Y+  perm[Z+1]]].dot3(x,   y,   z-1);
-    var n010 = gradP[X+  perm[Y+1+perm[Z  ]]].dot3(x,   y-1,   z);
-    var n011 = gradP[X+  perm[Y+1+perm[Z+1]]].dot3(x,   y-1, z-1);
-    var n100 = gradP[X+1+perm[Y+  perm[Z  ]]].dot3(x-1,   y,   z);
-    var n101 = gradP[X+1+perm[Y+  perm[Z+1]]].dot3(x-1,   y, z-1);
-    var n110 = gradP[X+1+perm[Y+1+perm[Z  ]]].dot3(x-1, y-1,   z);
-    var n111 = gradP[X+1+perm[Y+1+perm[Z+1]]].dot3(x-1, y-1, z-1);
+    var n000 = gradP[X+  perm[Y+  perm[Z  ]]].makeDot(x,   y,     z);
+    var n001 = gradP[X+  perm[Y+  perm[Z+1]]].makeDot(x,   y,   z-1);
+    var n010 = gradP[X+  perm[Y+1+perm[Z  ]]].makeDot(x,   y-1,   z);
+    var n011 = gradP[X+  perm[Y+1+perm[Z+1]]].makeDot(x,   y-1, z-1);
+    var n100 = gradP[X+1+perm[Y+  perm[Z  ]]].makeDot(x-1,   y,   z);
+    var n101 = gradP[X+1+perm[Y+  perm[Z+1]]].makeDot(x-1,   y, z-1);
+    var n110 = gradP[X+1+perm[Y+1+perm[Z  ]]].makeDot(x-1, y-1,   z);
+    var n111 = gradP[X+1+perm[Y+1+perm[Z+1]]].makeDot(x-1, y-1, z-1);
 
-    // Compute the fade curve value for x, y, z
     var u = fade(x);
     var v = fade(y);
     var w = fade(z);
 
-    // Interpolate
     return lerp(
         lerp(
           lerp(n000, n100, u),
@@ -130,8 +112,7 @@ function perlinNoiseGenerator() {
   };
 }
 
-var perlinNoise = new perlinNoiseGenerator();
-perlinNoise.seed(Math.random());
+var perlinNoise = new perlinNoiseGenerator(Math.random());
 
 
 // file: bwipp/renlinear.js
@@ -5420,7 +5401,7 @@ function Bitmap(precisely, usePerlinBrush) {
         }
 
         if (this.usePerlinBrush) {
-            var value = perlinNoise.perlin3(x / 5, y / 5, 0); // !!!! 0
+            var value = perlinNoise.perlin(x / 5, y / 5, 0); // !!!! 0
 
             value = (1 + value) * 1.1 * 128;
 
@@ -5473,7 +5454,7 @@ function Bitmap(precisely, usePerlinBrush) {
                 {
                     for (var iy = this._miny; iy <= this._maxy; ++iy)
                     {
-                        var value = perlinNoise.perlin3(ix / 5, iy / 5, 0); // !!!! 0
+                        var value = perlinNoise.perlin(ix / 5, iy / 5, 0); // !!!! 0
 
                         if (max < value) max = value;
                         if (min > value) min = value;
@@ -5518,49 +5499,55 @@ function Bitmap(precisely, usePerlinBrush) {
             png.set(x, y, c);
         }
 
+        if (this.usePerlinBrush)
+          perlinNoise.nextCapcha();
+
         return png.render();
     }
 
     this.placeToCanvas = function(canvasId) {
-		var el = document.getElementById(canvasId);
-		if (_bits.length == 0) {
-			el.width  = 48;
-			el.height = 48;
-			el.getContext('2d').clearRect(0, 0, el.width, el.height);
-			el.style.visibility = 'visible';
-			return;
-		}
+  		var el = document.getElementById(canvasId);
+  		if (_bits.length == 0) {
+  			el.width  = 48;
+  			el.height = 48;
+  			el.getContext('2d').clearRect(0, 0, el.width, el.height);
+  			el.style.visibility = 'visible';
+  			return;
+  		}
 
     	var w = this._maxx-this._minx+1;
     	var h = this._maxy-this._miny+1;
 
-		el.width  = w;
-		el.height = h;
+		  el.width  = w;
+		  el.height = h;
 
-		var ctx = el.getContext('2d');
-		ctx.fillStyle = '#fff';
-		ctx.fillRect(0, 0, el.width, el.height);
+  		var ctx = el.getContext('2d');
+  		ctx.fillStyle = '#fff';
+  		ctx.fillRect(0, 0, el.width, el.height);
 
-		var id  = ctx.getImageData(0, 0, el.width, el.height);
-		var dat = id.data;
+  		var id  = ctx.getImageData(0, 0, el.width, el.height);
+  		var dat = id.data;
 
-		for (var i = 0; i < _bits.length; i++) {
-			// PostScript builds bottom-up, we build top-down.
-			var x = _bits[i][0] - this._minx;
-			var y = _bits[i][1] - this._miny;
-			var c = _bits[i][2];
+  		for (var i = 0; i < _bits.length; i++) {
+  			// PostScript builds bottom-up, we build top-down.
+  			var x = _bits[i][0] - this._minx;
+  			var y = _bits[i][1] - this._miny;
+  			var c = _bits[i][2];
 
-    		y = h - y - 1; 	// Invert y
+      		y = h - y - 1; 	// Invert y
 
-			var idx = (y * id.width + x) * 4
-			dat[idx++] = c >> 16;           // r
-			dat[idx++] = (c >> 8) & 0xff; // g
-			dat[idx++] = (c & 0xff);      // b
-			dat[idx]   = 255;
-		}
-		ctx.putImageData(id, 0, 0);
-		el.style.visibility = 'visible';
-	}
+  			var idx = (y * id.width + x) * 4
+  			dat[idx++] = c >> 16;           // r
+  			dat[idx++] = (c >> 8) & 0xff; // g
+  			dat[idx++] = (c & 0xff);      // b
+  			dat[idx]   = 255;
+  		}
+		  ctx.putImageData(id, 0, 0);
+		  el.style.visibility = 'visible';
+
+      if (this.usePerlinBrush)
+        perlinNoise.nextCapcha();
+	  }
 }
 
 
