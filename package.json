@@ -1,0 +1,6 @@
+{
+  "name": "purejs-captcha",
+  "version": "0.2.0",
+  "description": "Captcha render engine without any dependences",
+  "main": "distr/node-generic-captcha.js"
+}
