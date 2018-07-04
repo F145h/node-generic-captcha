@@ -1,7 +1,8 @@
 # purejs-captcha
 
 purejs-captcha - javascript code that renders captcha without any dependencies
-purejs-captcha works on Windows, Linux, FreeBSD, OSX, Android or any other platforms!
+
+Compatible with Windows, Linux, FreeBSD, OSX, Android or any other platforms!
 
 Node.js sample:
 
@@ -28,3 +29,5 @@ HTML5 canvas sample:
   c6.draw("canvas6");
 </script>
   ```
+
+PS: see "/exapmles"
