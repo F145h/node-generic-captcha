@@ -30,4 +30,4 @@ HTML5 canvas sample:
 </script>
   ```
 
-PS: see "/exapmles"
+PS: see "/examples"
