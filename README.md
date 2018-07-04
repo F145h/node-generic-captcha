@@ -14,9 +14,9 @@ captcha.addNoise();
 captcha.pngStream() // returns stream with captcha
 ```
 
-```html
 HTML5 canvas sample:
 
+```html
 <script type="text/javascript" src="node-generic-captcha.js"></script>
 
 <div><canvas id="canvas6" width=1 height=1 style="border:1px solid #fff;visibility:hidden;padding-bottom: 10px;"></canvas></div>
