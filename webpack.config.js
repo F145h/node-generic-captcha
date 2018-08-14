@@ -24,7 +24,7 @@ module.exports = {
     externals: nodeModules,
     output: {
         path: path.resolve(__dirname, "distr"),
-        filename: 'node-generic-captcha'
+        filename: 'node-generic-captcha.js'
     },
     module: {
         rules: [
